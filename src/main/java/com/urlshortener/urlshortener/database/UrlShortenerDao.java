@@ -1,16 +1,15 @@
 package com.urlshortener.urlshortener.database;
 
 import com.urlshortener.urlshortener.model.UrlEntry;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @Repository
 public class UrlShortenerDao {
@@ -28,26 +27,29 @@ public class UrlShortenerDao {
   public void insertUrlInfo(UrlEntry urlEntry) {
     try {
       String key = TABLE_NAME + ":" + urlEntry.getId();
-      hashOperations.put(key, "id", urlEntry.getId());
-      hashOperations.put(key, "url", urlEntry.getUrl());
-      hashOperations.put(key, "name", urlEntry.getName());
-      hashOperations.put(key, "shortenedUrl", urlEntry.getShortenedUrl());
-      hashOperations.put(key, "expiryDate", String.valueOf(urlEntry.getExpiryDate()));
+      hashOperations.put(key, UrlsTableKeys.id.name(), urlEntry.getId());
+      hashOperations.put(key, UrlsTableKeys.url.name(), urlEntry.getUrl());
+      hashOperations.put(key, UrlsTableKeys.name.name(), urlEntry.getName());
+      hashOperations.put(key, UrlsTableKeys.shortenedUrl.name(), urlEntry.getShortenedUrl());
+      hashOperations.put(
+          key, UrlsTableKeys.expiryDate.name(), String.valueOf(urlEntry.getExpiryDate()));
     } catch (Exception e) {
       logger.error("Error while inserting url info", e);
       throw new RuntimeException(e);
     }
   }
 
-  public UrlEntry getUrlInfo(String id) {
+  public UrlEntry getUrlInfoById(String id) {
     try {
       String key = TABLE_NAME + ":" + id;
       return new UrlEntry.Builder()
-          .id(hashOperations.get(key, "id"))
-          .name(hashOperations.get(key, "name"))
-          .url(hashOperations.get(key, "url"))
-          .shortenedUrl(hashOperations.get(key, "shortenedUrl"))
-          .expiryDate(Long.parseLong(Objects.requireNonNull(hashOperations.get(key, "expiryDate"))))
+          .id(hashOperations.get(key, UrlsTableKeys.id.name()))
+          .name(hashOperations.get(key, UrlsTableKeys.name.name()))
+          .url(hashOperations.get(key, UrlsTableKeys.url.name()))
+          .shortenedUrl(hashOperations.get(key, UrlsTableKeys.shortenedUrl.name()))
+          .expiryDate(
+              Long.parseLong(
+                  Objects.requireNonNull(hashOperations.get(key, UrlsTableKeys.expiryDate.name()))))
           .build();
     } catch (Exception e) {
       logger.error("Error while getting url info", e);
@@ -63,12 +65,14 @@ public class UrlShortenerDao {
       for (String key : keys) {
         UrlEntry urlEntry =
             new UrlEntry.Builder()
-                .id(hashOperations.get(key, "id"))
-                .name(hashOperations.get(key, "name"))
-                .url(hashOperations.get(key, "url"))
-                .shortenedUrl(hashOperations.get(key, "shortenedUrl"))
+                .id(hashOperations.get(key, UrlsTableKeys.id.name()))
+                .name(hashOperations.get(key, UrlsTableKeys.name.name()))
+                .url(hashOperations.get(key, UrlsTableKeys.url.name()))
+                .shortenedUrl(hashOperations.get(key, UrlsTableKeys.shortenedUrl.name()))
                 .expiryDate(
-                    Long.parseLong(Objects.requireNonNull(hashOperations.get(key, "expiryDate"))))
+                    Long.parseLong(
+                        Objects.requireNonNull(
+                            hashOperations.get(key, UrlsTableKeys.expiryDate.name()))))
                 .build();
         urlEntries.add(urlEntry);
       }
@@ -83,7 +87,7 @@ public class UrlShortenerDao {
     try {
 
       String key = TABLE_NAME + ":" + id;
-      return hashOperations.get(key, "id") != null;
+      return hashOperations.get(key, UrlsTableKeys.id.name()) != null;
     } catch (Exception e) {
       logger.error("Error while id validation", e);
       throw new RuntimeException(e);
@@ -95,16 +99,18 @@ public class UrlShortenerDao {
       // Iterate over all keys to find the matching shortenedUrl
       Set<String> keys = redisTemplate.keys(TABLE_NAME + ":*");
       for (String key : keys) {
-        String storedShortenedUrl = hashOperations.get(key, "shortenedUrl");
+        String storedShortenedUrl = hashOperations.get(key, UrlsTableKeys.shortenedUrl.name());
         if (shortenedUrl.equals(storedShortenedUrl)) {
           // Found a match, retrieve the full record
           return new UrlEntry.Builder()
-              .id(hashOperations.get(key, "id"))
-              .name(hashOperations.get(key, "name"))
-              .url(hashOperations.get(key, "url"))
+              .id(hashOperations.get(key, UrlsTableKeys.id.name()))
+              .name(hashOperations.get(key, UrlsTableKeys.name.name()))
+              .url(hashOperations.get(key, UrlsTableKeys.url.name()))
               .shortenedUrl(storedShortenedUrl)
               .expiryDate(
-                  Long.parseLong(Objects.requireNonNull(hashOperations.get(key, "expiryDate"))))
+                  Long.parseLong(
+                      Objects.requireNonNull(
+                          hashOperations.get(key, UrlsTableKeys.expiryDate.name()))))
               .build();
         }
       }

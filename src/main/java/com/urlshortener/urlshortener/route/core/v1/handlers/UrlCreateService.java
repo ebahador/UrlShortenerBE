@@ -6,14 +6,13 @@ import com.urlshortener.urlshortener.model.dto.CreateUrlDto;
 import com.urlshortener.urlshortener.route.ApiResponse;
 import com.urlshortener.urlshortener.route.utils.StrUtils;
 import com.urlshortener.urlshortener.route.utils.UrlShortener;
+import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.UUID;
+import org.springframework.util.StringUtils;
 
 @Service
 public class UrlCreateService {
@@ -26,10 +25,7 @@ public class UrlCreateService {
 
   public ResponseEntity<ApiResponse<UrlEntry>> createUrl(CreateUrlDto urlEntry) {
     try {
-      if (urlEntry.getUrl() == null
-          || urlEntry.getUrl().isEmpty()
-          || urlEntry.getName() == null
-          || urlEntry.getName().isEmpty()) {
+      if (StringUtils.hasLength(urlEntry.getUrl()) || StringUtils.hasLength(urlEntry.getName())) {
         logger.warn("url or name is empty");
         ApiResponse<UrlEntry> apiResponse = new ApiResponse<>("url or name is empty", 0, null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);

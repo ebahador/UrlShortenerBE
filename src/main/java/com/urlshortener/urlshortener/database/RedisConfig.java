@@ -9,15 +9,15 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 @Configuration
 public class RedisConfig {
 
-    @Bean
-    public StringRedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        StringRedisTemplate template = new StringRedisTemplate(redisConnectionFactory);
-        template.setEnableTransactionSupport(true);
-        return template;
-    }
+  @Bean
+  public StringRedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    StringRedisTemplate template = new StringRedisTemplate(redisConnectionFactory);
+    template.setEnableTransactionSupport(true);
+    return template;
+  }
 
-    @Bean
-    public HashOperations<String, String, String> hashOperations(StringRedisTemplate redisTemplate) {
-        return redisTemplate.opsForHash();
-    }
+  @Bean
+  public HashOperations<String, String, String> hashOperations(StringRedisTemplate redisTemplate) {
+    return redisTemplate.opsForHash();
+  }
 }

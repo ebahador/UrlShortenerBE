@@ -3,14 +3,14 @@ package com.urlshortener.urlshortener.route.core.v1.handlers;
 import com.urlshortener.urlshortener.database.UrlShortenerDao;
 import com.urlshortener.urlshortener.model.UrlEntry;
 import com.urlshortener.urlshortener.route.ApiResponse;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.util.StringUtils;
 
 @Service
 public class UrlInfoService {
@@ -24,7 +24,7 @@ public class UrlInfoService {
 
   public ResponseEntity<ApiResponse<UrlEntry>> getUrlById(String id) {
     try {
-      if (id == null || id.isEmpty()) {
+      if (StringUtils.hasLength(id)) {
         logger.warn("Id is null or empty");
         ApiResponse<UrlEntry> apiResponse = new ApiResponse<>("Id is null or empty", 0, null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
@@ -37,7 +37,7 @@ public class UrlInfoService {
       }
 
       logger.info("Get url by id: {}", id);
-      UrlEntry urlEntries = dao.getUrlInfo(id);
+      UrlEntry urlEntries = dao.getUrlInfoById(id);
       ApiResponse<UrlEntry> apiResponse = new ApiResponse<>(null, 1, urlEntries);
       return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     } catch (Exception e) {

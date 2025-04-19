@@ -1,13 +1,12 @@
 package com.urlshortener.urlshortener.route;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
-  private Optional<String> message;
-  private Optional<Integer> total;
+  private Optional<String> message = Optional.empty();
+  private Optional<Integer> total = Optional.empty();
   private T data;
 
   // Constructor for success or error responses

@@ -1,5 +1,7 @@
 package com.urlshortener.urlshortener.route.utils;
 
+import org.springframework.util.StringUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,7 +11,7 @@ public class StrUtils {
   private static final Pattern pattern = Pattern.compile(URL_REGEX);
 
   public static boolean isValidUrl(String url) {
-    if (url == null || url.isEmpty()) {
+    if (StringUtils.hasLength(url)) {
       return false;
     }
 
